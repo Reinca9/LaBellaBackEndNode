@@ -1,31 +1,13 @@
-const mongoose = require("mongoose");
+const connection = require("../db");
 
-const UserSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    maxlength: 255,
-  },
-  password: {
-    type: String,
-    required: true,
-    unique: true,
-    maxlength: 255,
-  },
-  name: {
-    type: String,
-    required: true,
-    maxlength: 255,
-  },
-  firstName: {
-    type: String,
-    required: true,
-    maxlength: 255,
-  },
-  phoneNumber: {
-    type: Number,
-    maxlength: 255,
-  },
-});
-module.exports = mongoose.model("laBella", UserSchema);
+const createUser = (user, callback) => {
+  const { email, password, name, firstName, phoneNumber } = user;
+  const query = `INSERT INTO users (user_email, user_password, user_phone, user_prenom, user_nom) VALUES (?, ?, ?, ?, ?)`;
+  const values = [email, password, phoneNumber, firstName, name];
+
+  connection.query(query, values, callback);
+};
+
+module.exports = {
+  createUser,
+};

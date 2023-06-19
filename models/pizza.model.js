@@ -1,31 +1,13 @@
-const mongoose = require("mongoose");
+const connection = require("../db");
 
-const PizzaSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-    maxlength: 255,
-  },
-  description: {
-    type: String,
-    required: true,
-    maxlength: 255,
-  },
-  price: {
-    type: Number,
-    required: true,
-    maxlength: 255,
-  },
-  base: {
-    type: String,
-    required: true,
-    maxlength: 255,
-  },
-  imageUrl: {
-    type: String,
-    maxlength: 255,
-  },
-});
+const createPizza = (pizza, callback) => {
+  const { name, description, price, base, imageUrl } = pizza;
+  const query = `INSERT INTO pizzas (name, description, price, base, imageUrl) VALUES (?, ?, ?, ?, ?)`;
+  const values = [name, description, price, base, imageUrl];
 
-module.exports = mongoose.model("laBella");
+  connection.query(query, values, callback);
+};
+
+module.exports = {
+  createPizza,
+};
