@@ -1,6 +1,3 @@
-const bcrypt = require("bcrypt");
-const userModel = require("../models/user.model");
-
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -27,8 +24,4 @@ const loginUser = async (req, res) => {
     console.error("Error comparing passwords:", error);
     return res.status(500).json({ error: "An error occurred during login" });
   }
-};
-
-module.exports = {
-  loginUser,
 };
