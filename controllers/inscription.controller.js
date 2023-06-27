@@ -5,10 +5,10 @@ const saltRounds = 10;
 
 const registerUser = async (req, res) => {
   const { email, password, firstName, lastName, phoneNumber } = req.body;
-
   const existingUser = await userModel.getUserByEmail(email);
+
   if (existingUser) {
-    return res.status(400).json({ errorMailExist: "Email already exists" });
+    return res.status(400).json({ error: "Email already exists" });
   }
 
   // Perform any necessary validation on the form data
