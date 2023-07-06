@@ -5,7 +5,7 @@ const createUser = (user, callback) => {
   const query =
     "INSERT INTO user (user_mail, user_password, user_prenom, user_nom, user_phone) VALUES (?, ?, ?, ?, ?)";
   const values = [email, password, firstName, lastName, phoneNumber];
-
+  console.log(query);
   connection.query(query, values, (err, result) => {
     if (err) {
       callback(err);

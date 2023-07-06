@@ -5,7 +5,7 @@ const saltRounds = 10;
 
 const registerUser = async (req, res) => {
   const { email, password, firstName, lastName, phoneNumber } = req.body;
-
+  console.log("query sent");
   try {
     const existingUser = await userModel.getUserByEmail(email);
 
