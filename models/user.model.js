@@ -15,26 +15,26 @@ const createUser = (user, callback) => {
   });
 };
 
-const getUserByEmail = (email) => {
-  return new Promise((resolve, reject) => {
-    const query = "SELECT * FROM user WHERE user_mail = ?";
-    const values = [email];
-    connection.query(query, values, (err, results) => {
-      if (err) {
-        reject(err);
-      } else {
-        if (results.length > 0) {
-          const user = results[0];
-          resolve(user);
-        } else {
-          resolve(null); // No user found with the given email
-        }
-      }
-    });
+const checkIfEmailExists = (email, value) => {
+  const query = "SELECT * FROM user WHERE user_mail = ?";
+  const values = email;
+  console.log(query);
+  console.log(email);
+  connection.query(query, values, (results) => {
+    if (results.length > 0) {
+      const user = results[0];
+      console.log("true");
+      value = true;
+      return;
+    } else {
+      console.log("false");
+      value = false;
+      return;
+    }
   });
 };
 
 module.exports = {
   createUser,
-  getUserByEmail,
+  checkIfEmailExists,
 };
