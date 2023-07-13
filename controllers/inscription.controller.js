@@ -6,80 +6,46 @@ const saltRounds = 10;
 const registerUser = async (req, res) => {
   const { email, password, firstName, lastName, phoneNumber } = req.body;
   console.log(req.body);
-  var value = null;
-  const emailExists = await userModel.checkIfEmailExists(email, value);
-  if ((emailExists.value = true)) {
-    console.error("Email already exists", error);
-    return res.status(400).json({ error: "Email already exists" });
-  } else {
-    // Rest of your registration logic here
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex =
+    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,}$/;
+  const nameRegex = /^[A-Za-z]+$/;
+  const phoneNumberRegex = /^(\+33\s?|0)[1-9](\s?\d{2}){4}$/;
+  try {
+    const emailExists = userModel.checkIfEmailExists(email);
 
-    // Perform any necessary validation on the form data
-    if (!email || !password || !firstName || !lastName || !phoneNumber) {
+    if (emailExists > 0) {
+      console.error("Email already exists");
+      return res.status(400).json({ error: "Email already exists" });
+    } else if (!email || !password || !firstName || !lastName || !phoneNumber) {
       return res.status(400).json({ error: "All fields are required" });
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    } else if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email format" });
-    }
-
-    // Validate password format
-    const passwordRegex =
-      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,}$/;
-    if (!passwordRegex.test(password)) {
+    } else if (!passwordRegex.test(password)) {
       return res.status(400).json({ error: "Invalid password format" });
-    }
-
-    // Validate first name format
-    const nameRegex = /^[A-Za-z]+$/;
-    if (!nameRegex.test(firstName)) {
+    } else if (!nameRegex.test(firstName)) {
       return res.status(400).json({ error: "Invalid first name format" });
-    }
-
-    // Validate last name format
-    if (!nameRegex.test(lastName)) {
+    } else if (!nameRegex.test(lastName)) {
       return res.status(400).json({ error: "Invalid last name format" });
-    }
-
-    // Validate phone number format
-    const phoneNumberRegex = /^(\+33\s?|0)[1-9](\s?\d{2}){4}$/;
-    if (!phoneNumberRegex.test(phoneNumber)) {
+    } else if (!phoneNumberRegex.test(phoneNumber)) {
       return res.status(400).json({ error: "Invalid phone number format" });
     }
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Hash the password
-    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
-      if (err) {
-        console.error("Error hashing password:", err);
-        return res
-          .status(500)
-          .json({ error: "An error occurred during registration" });
-      }
-
-      // Create a new user object
-      const newUser = {
-        email,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        phoneNumber,
-      };
-
-      // Insert the new user into the database
-      userModel.createUser(newUser, (err, result) => {
-        if (err) {
-          console.error("Error inserting user:", err);
-          return res
-            .status(500)
-            .json({ error: "An error occurred during registration" });
-        }
-
-        // If success
-        res.json({ message: "Registration successful" });
-      });
-    });
+    const newUser = {
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      phoneNumber,
+    };
+    await userModel.createUser(newUser);
+    res.json({ message: "Registration successful" });
+  } catch (error) {
+    console.error("Error during registration:", error);
+    return res
+      .status(500)
+      .json({ error: "An error occurred during registration" });
   }
 };
 
