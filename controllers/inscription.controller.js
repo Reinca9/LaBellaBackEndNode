@@ -39,7 +39,7 @@ const registerUser = async (req, res) => {
       lastName,
       phoneNumber,
     };
-    await userModel.createUser(newUser);
+    userModel.createUser(newUser);
     res.json({ message: "Registration successful" });
   } catch (error) {
     console.error("Error during registration:", error);

@@ -1,27 +1,31 @@
+const userModel = require("../models/user.model");
+const connexionModel = require("../models/connexion.model");
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-
-  // Find the user in the database
-  const user = await userModel.getUserByEmail(email);
-
-  if (!user) {
-    return res.status(401).json({ error: "Invalid email or password" });
-  }
-
+  console.log(req.body);
   try {
-    // Compare the password with the hashed password stored in the database
-    const isMatch = await bcrypt.compare(password, user.password);
+    const authenticationResult = await connexionModel.authenticateUser(
+      email,
+      password
+    );
 
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid email or password" });
+    if (!authenticationResult.authenticated) {
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Passwords match, user is authenticated
-    // You can generate a token or set a session here
-    // Return a success response
-    res.json({ message: "Login successful" });
+    const token = authenticationResult.token;
+
+    // Send the token in the response
+    res.cookie("token", token);
+
+    res.redirect("/home");
   } catch (error) {
-    console.error("Error comparing passwords:", error);
+    console.error("Error logging in:", error);
     return res.status(500).json({ error: "An error occurred during login" });
   }
+};
+
+module.exports = {
+  loginUser,
 };

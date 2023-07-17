@@ -1,33 +1,36 @@
 const bcrypt = require("bcrypt");
-const db = require("../database"); // Assuming you have a database connection
+const jwt = require("jsonwebtoken");
+const config = require("../config/config");
+const userModel = require("../models/user.model");
 
-const getUserByEmail = async (email) => {
-  const query = `SELECT * FROM user WHERE user_email = "${email}"`;
-  
+const authenticateUser = async (email, password) => {
   try {
-    const [rows] = await db.query(query);
-    const user = rows[0];
+    const emailExists = await userModel.checkIfEmailExists(email);
 
-    if (!user) {
-      return null;
+    if (!emailExists) {
+      throw new Error("Wrong email");
     }
 
-    // Compare the hashed password with the provided password
-    const isMatch = await bcrypt.compare(password, user.password);
+    const user = await userModel.getUserByEmail(email);
+    console.log("authUser function working"); // Add console log statement here
 
-    if (isMatch) {
-      // Passwords match, return the user object
-      return user;
-    } else {
-      // Passwords do not match
-      return null;
+    const passwordMatch = await bcrypt.compare(password, user.user_password);
+
+    if (!passwordMatch) {
+      throw new Error("Wrong password");
     }
+
+    const token = jwt.sign({ userId: user.user_id }, config.jwtSecret, {
+      expiresIn: "24h",
+    });
+
+    return { authenticated: true, token };
   } catch (error) {
-    console.error("Error retrieving user:", error);
+    console.error("Error logging in:", error);
     throw error;
   }
 };
 
 module.exports = {
-  getUserByEmail,
+  authenticateUser,
 };
