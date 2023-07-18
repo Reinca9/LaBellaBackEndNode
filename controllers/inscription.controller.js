@@ -12,7 +12,7 @@ const registerUser = async (req, res) => {
   const nameRegex = /^[A-Za-z]+$/;
   const phoneNumberRegex = /^(\+33\s?|0)[1-9](\s?\d{2}){4}$/;
   try {
-    const emailExists = userModel.checkIfEmailExists(email);
+    // const emailExists = userModel.checkIfEmailExists(email);
 
     if (emailExists > 0) {
       console.error("Email already exists");
