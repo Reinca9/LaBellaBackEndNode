@@ -9,9 +9,6 @@ const authenticateUser = async (email, password) => {
     console.log("email", email);
     console.log("password", password);
 
-    // Ajoutons également un log ici pour vérifier si la fonction est appelée
-    console.log("authenticateUser function called");
-
     const emailExists = await userModel.checkIfEmailExists(email);
     console.log("emailExists", emailExists);
 
@@ -20,7 +17,6 @@ const authenticateUser = async (email, password) => {
     }
 
     const user = await userModel.getUserByEmail(email);
-    console.log("authUser function working");
     console.log("user", user);
 
     const passwordMatch = await bcrypt.compare(password, user.user_password);

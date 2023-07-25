@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const userModel = require("../models/user.model");
-
+const connection = require("../config/database"); // Add this line
 const saltRounds = 10;
 
 const registerUser = async (req, res) => {
