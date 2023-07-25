@@ -5,14 +5,23 @@ const userModel = require("../models/user.model");
 
 const authenticateUser = async (email, password) => {
   try {
+    console.log("try authenticateUser");
+    console.log("email", email);
+    console.log("password", password);
+
+    // Ajoutons également un log ici pour vérifier si la fonction est appelée
+    console.log("authenticateUser function called");
+
     const emailExists = await userModel.checkIfEmailExists(email);
+    console.log("emailExists", emailExists);
 
     if (!emailExists) {
       throw new Error("Wrong email");
     }
 
     const user = await userModel.getUserByEmail(email);
-    console.log("authUser function working"); // Add console log statement here
+    console.log("authUser function working");
+    console.log("user", user);
 
     const passwordMatch = await bcrypt.compare(password, user.user_password);
 
