@@ -1,5 +1,6 @@
 const userModel = require("../models/user.model");
 const connexionModel = require("../models/connexion.model");
+const connection = require("../config/database");
 
 const loginUser = async (req, res) => {
   try {
@@ -18,22 +19,20 @@ const loginUser = async (req, res) => {
 
     const { email, password } = req.body;
     console.log(req.body);
-    console.log("try loginUser");
-    // Check if the email exists using checkIfEmailExists
     const emailExists = await userModel.checkIfEmailExists(email);
-    console.log("emailExists", emailExists);
+    console.log("emailExists", emailExists); //  WORKS
 
     if (!emailExists) {
-      console.log("email doesn't exist");
+      console.log("email doesn't exist"); // WORKS
       return res.status(401).json({ error: "Invalid credentials" });
     } else {
-      console.log("else entered");
-      // If email exists, call authenticateUser to verify the user's credentials
+      console.log("else entered"); // WORKS
+
       const authenticationResult = await connexionModel.authenticateUser(
         email,
         password
       );
-      console.log("authenticationResult", authenticationResult); // Add this log statement
+      console.log("authenticationResult", authenticationResult);
 
       if (!authenticationResult.authenticated) {
         console.log("Authentication failed");
@@ -41,11 +40,10 @@ const loginUser = async (req, res) => {
       }
 
       const token = authenticationResult.token;
-      console.log("auth token", token);
-
-      res.cookie("token", token);
-
-      res.redirect("/home");
+      res.cookie("token", token); // WORKS
+      const dispatch = useDispatch();
+      dispatch({ type: ActionType.LOGIN_SUCCESS });
+      return res.status(200).json({ success: "User logged in successfully!" });
     }
   } catch (error) {
     console.error("Error logging in:", error);

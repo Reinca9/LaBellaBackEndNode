@@ -16,14 +16,14 @@ const createUser = (user) => {
   });
 };
 const checkIfEmailExists = async (email) => {
-  console.log("Inside checkIfEmailExists:", email);
+  console.log("Inside checkIfEmailExists:", email); // WORKS
 
   const query = "SELECT COUNT(*) as count FROM user WHERE user_mail = ?";
   const values = [email];
 
   try {
     const [results] = await connection.execute(query, values);
-    console.log("SQL query results:", results);
+    console.log("SQL query results:", results); // WORKS
 
     const count = results[0].count;
     const exists = count > 0;
@@ -34,30 +34,27 @@ const checkIfEmailExists = async (email) => {
   }
 };
 
-const getUserByEmail = (email) => {
-  return new Promise((resolve, reject) => {
-    console.log("getUserByEmail called with email:", email);
+const getUserByEmail = async (email) => {
+  try {
+    console.log("getUserByEmail called with email:", email); // WORKS
 
     const query = "SELECT * FROM user WHERE user_mail = ?";
     const values = [email];
-    connection.query(query, values, (err, results) => {
-      if (err) {
-        console.error("Error executing SQL query:", err);
-        reject(err);
-      } else {
-        console.log("SQL query results:", results);
 
-        if (results.length === 0) {
-          console.log("User not found for email:", email);
-          reject(new Error("User not found"));
-        } else {
-          const user = results[0];
-          console.log("User found:", user);
-          resolve(user);
-        }
-      }
-    });
-  });
+    const [results] = await connection.execute(query, values);
+
+    if (results.length === 0) {
+      console.log("User not found for email:", email);
+      throw new Error("User not found");
+    } else {
+      const user = results[0];
+      console.log("User found:", user);
+      return user;
+    }
+  } catch (error) {
+    console.error("Error executing SQL query:", error);
+    throw error;
+  }
 };
 
 module.exports = {

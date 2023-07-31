@@ -5,21 +5,14 @@ const userModel = require("../models/user.model");
 
 const authenticateUser = async (email, password) => {
   try {
-    console.log("try authenticateUser");
-    console.log("email", email);
-    console.log("password", password);
-
-    const emailExists = await userModel.checkIfEmailExists(email);
-    console.log("emailExists", emailExists);
-
-    if (!emailExists) {
-      throw new Error("Wrong email");
-    }
+    console.log("try authenticateUser"); //WORKS
 
     const user = await userModel.getUserByEmail(email);
-    console.log("user", user);
 
     const passwordMatch = await bcrypt.compare(password, user.user_password);
+
+    console.log(user.user_password);
+    console.log("password match");
 
     if (!passwordMatch) {
       throw new Error("Wrong password");
